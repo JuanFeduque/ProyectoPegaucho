@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+/*using Microsoft.AspNetCore.Components;
 using Pegaucho.Frontend.Client.Repositories;
 using Pegaucho.Shared.Entities;
 namespace Pegaucho.Frontend.Client.Pages.OrdenesProducciones;
@@ -10,4 +10,4 @@ public partial class OrdenesProduccionesIndex
     {
         var response = await Repository.GetAsync<List<OrdenProduccion>>("api/ordenesproducciones");
     }
-}
+}*/
