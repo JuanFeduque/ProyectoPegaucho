@@ -4,6 +4,7 @@ namespace PegauchoBackend.Repositories.Interfases;
 
 public interface IGenericRepository<T> where T : class
 {
+    //Polimorfismo por interface
     Task<ActionResponse<T>> GetAsync(int id);
 
     Task<ActionResponse<IEnumerable<T>>> GetAsync();

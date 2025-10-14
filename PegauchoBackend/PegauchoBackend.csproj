@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Pegaucho.Shared\Pegaucho.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UnitsOfWork\Implementations\" />
-  </ItemGroup>
-
 </Project>
