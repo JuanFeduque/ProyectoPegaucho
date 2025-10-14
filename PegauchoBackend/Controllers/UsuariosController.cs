@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Orders.Shared.Entities;
 using PegauchoBackend.Data;
 
@@ -14,8 +15,14 @@ public class UsuariosController : ControllerBase
     {
         _context = context;
     }
+    [HttpGet]
+    public async Task <IActionResult> GetAsync() 
+    {
+        return Ok(await _context.Usuarios.ToListAsync());
+    }
+
     [HttpPost]
-    public async Task <IActionResult> PostAsync(Usuario usuario) 
+    public async Task<IActionResult> PostAsync(Usuario usuario)
     {
         _context.Usuarios.Add(usuario);
         await _context.SaveChangesAsync();

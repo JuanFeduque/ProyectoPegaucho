@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Pegaucho.Shared.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Orders.Shared.Entities;
 
@@ -8,9 +9,12 @@ public class Usuario
     public int idLogin { get; set; }
 
 
-    /*[Required(ErrorMessage = "El campo es obligatorio")]*/
-    /*[MaxLength(100, ErrorMessage = "El campo no puede tener mas caracteres")]*/
+    [Required(ErrorMessage = "El campo es obligatorio")]
+    [MaxLength(100, ErrorMessage = "El campo no puede tener mas caracteres")]
     public string usuario { get; set; } = null!;
     public string contrasena { get; set; } = null!;
+
+    //Relacion uno a muchos
+    public ICollection<Produccion> Producciones { get; set; } = new List<Produccion>();
 }
 
