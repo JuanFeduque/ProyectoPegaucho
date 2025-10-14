@@ -2,30 +2,15 @@
 using Microsoft.EntityFrameworkCore;
 using Orders.Shared.Entities;
 using PegauchoBackend.Data;
+using PegauchoBackend.UnitsOfWork.Interfaces;
 
 namespace PegauchoBackend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsuariosController : ControllerBase
+public class UsuariosController : GenericController<Usuario>
 {
-    private readonly DataContext _context;
-
-    public UsuariosController(DataContext context)
+    public UsuariosController(IGenericUnitOfWork<Usuario> unitOfWork) : base(unitOfWork)
     {
-        _context = context;
-    }
-    [HttpGet]
-    public async Task <IActionResult> GetAsync() 
-    {
-        return Ok(await _context.Usuarios.ToListAsync());
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> PostAsync(Usuario usuario)
-    {
-        _context.Usuarios.Add(usuario);
-        await _context.SaveChangesAsync();
-        return Ok(usuario);
     }
 }
