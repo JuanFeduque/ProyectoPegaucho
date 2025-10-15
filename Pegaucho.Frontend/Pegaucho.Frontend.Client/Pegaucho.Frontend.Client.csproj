@@ -19,8 +19,4 @@
     <ProjectReference Include="..\..\Pegaucho.Shared\Pegaucho.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Pages\Login\" />
-  </ItemGroup>
-
 </Project>
