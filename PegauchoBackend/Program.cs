@@ -12,18 +12,29 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ? AGREGA CORS AQUÍ ?
+// CORS configuration
 builder.Services.AddCors(options =>
 {
+    // Permitir orígenes específicos (frontends y backend) - usar en producción
     options.AddPolicy("AllowBlazorClient", policy =>
     {
         policy.WithOrigins(
                 "https://localhost:7064",  // Frontend HTTPS
-                "http://localhost:5064"    // Frontend HTTP
+                "http://localhost:5064",   // Frontend HTTP
+                "https://localhost:7026",  // Backend/Swagger HTTPS (ajusta puerto si es necesario)
+                "http://localhost:7026"    // Backend/Swagger HTTP
             )
             .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+            .AllowAnyHeader();
+            // .AllowCredentials(); // NO usar AllowCredentials con AllowAnyOrigin
+    });
+
+    // Política de desarrollo abierta para debugging local (NO usar en producción)
+    options.AddPolicy("AllowAllDev", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
@@ -59,8 +70,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ? USA CORS ANTES DE Authorization ?
-app.UseCors("AllowBlazorClient");
+// Aplicar CORS antes de Authorization y MapControllers
+// En desarrollo usa la política abierta para evitar problemas de CORS/scheme con Swagger y Blazor
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("AllowAllDev");
+}
+else
+{
+    app.UseCors("AllowBlazorClient");
+}
 
 app.UseAuthorization();
 app.MapControllers();
