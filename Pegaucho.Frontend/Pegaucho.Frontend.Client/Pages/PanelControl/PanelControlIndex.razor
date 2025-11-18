@@ -1,0 +1,276 @@
+﻿@page "/ControlFabricacion"
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+
+    .header-container {
+        background-color: #3e3e9f;
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-title {
+        font-size: 2rem;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    .dropbox-icon {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+
+    .user-icon {
+        width: 35px;
+        height: 35px;
+        color: white;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 300;
+        color: #363636;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-container {
+        padding: 0 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .search-label {
+        font-weight: 600;
+        color: #363636;
+        margin-bottom: 0.5rem;
+    }
+
+    .table-wrapper {
+        padding: 0 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .table-container {
+        border: 2px solid #3e3e9f;
+        border-radius: 4px;
+        overflow: hidden;
+        background-color: #c8c8c8;
+    }
+
+    .scroll-indicator-up {
+        position: absolute;
+        top: -10px;
+        right: 40px;
+        font-size: 2rem;
+        color: #363636;
+    }
+
+    .scroll-indicator-down {
+        position: absolute;
+        bottom: -10px;
+        right: 40px;
+        font-size: 2rem;
+        color: #363636;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 2rem;
+        margin-top: 3rem;
+        margin-bottom: 2rem;
+        color: white !important;
+    }
+
+    .btn-primary {
+        background-color: #3e3e9f !important;
+        padding: 0.75rem 2.5rem !important;
+        font-size: 1rem !important;
+    }
+
+    .ver-link {
+        color: #3e3e9f;
+        text-decoration: underline;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+        .ver-link:hover {
+            color: #2a2a66;
+        }
+
+    .mud-table-cell {
+        border-right: 1px solid #999 !important;
+    }
+
+    .mud-table-head .mud-table-cell {
+        background-color: #3e3e9f !important;
+        color: white !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+        padding: 1rem 0.75rem !important;
+        border-right: 1px solid #5555aa !important;
+    }
+
+    .mud-table-row {
+        background-color: #c8c8c8 !important;
+    }
+
+        .mud-table-row:nth-child(even) {
+            background-color: #b8b8b8 !important;
+        }
+
+    .mud-table-cell {
+        text-align: center !important;
+        padding: 0.75rem !important;
+        color: #363636 !important;
+    }
+
+    @@media (max-width: 1200px) {
+        .table-wrapper {
+            overflow-x: auto;
+        }
+    }
+</style>
+
+<div class="header-container">
+    <div class="header-content">
+        <div class="header-left">
+            <svg class="dropbox-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 2L0 6l6 4 6-4-6-4zm12 0l-6 4 6 4 6-4-6-4zM0 14l6 4 6-4-6-4-6 4zm18 0l-6 4 6 4 6-4-6-4z" />
+            </svg>
+            <h1 class="header-title">Preflex línea Pegaucho</h1>
+        </div>
+        <div>
+            <svg class="user-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>
+        </div>
+    </div>
+</div>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Style="padding: 0;">
+    <h2 class="page-title">Panel de control</h2>
+
+    <!-- Búsqueda -->
+    <div class="search-container">
+        <div class="search-label">Orden:</div>
+        <MudTextField @bind-Value="busqueda"
+                      Placeholder=""
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Margin="Margin.Dense"
+                      Style="max-width: 300px; background-color: white;" />
+    </div>
+
+    <!-- Tabla con indicadores de scroll -->
+    <div class="table-wrapper">
+        <div class="scroll-indicator-up">↑</div>
+
+        <div class="table-container">
+            <MudTable Items="@ordenes"
+                      Hover="true"
+                      Dense="false"
+                      Style="background-color: #c8c8c8;">
+                <HeaderContent>
+                    <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Orden</MudTh>
+                    <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Estado</MudTh>
+                    <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Tiempo transcurrido</MudTh>
+                    <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Porcentaje</MudTh>
+                    <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Prioridad</MudTh>
+                    <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Observaciones</MudTh>
+                    <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Dosificación</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Orden" Style="text-align: center;">@context.Orden</MudTd>
+                    <MudTd DataLabel="Estado" Style="text-align: center;">@context.Estado</MudTd>
+                    <MudTd DataLabel="Tiempo transcurrido" Style="text-align: center;">@context.TiempoTranscurrido</MudTd>
+                    <MudTd DataLabel="Porcentaje" Style="text-align: center;">@context.Porcentaje</MudTd>
+                    <MudTd DataLabel="Prioridad" Style="text-align: center;">@context.Prioridad</MudTd>
+                    <MudTd DataLabel="Observaciones" Style="text-align: center;">@context.Observaciones</MudTd>
+                    <MudTd DataLabel="Dosificación" Style="text-align: center;">
+                        <span class="ver-link" @onclick="() => VerDosificacion(context.Orden)">Ver</span>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </div>
+
+        <div class="scroll-indicator-down">↓</div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="action-buttons">
+        <MudButton Variant="Variant.Filled"
+                   Class="btn-primary"
+                   OnClick="Regresar">
+            Regresar
+        </MudButton>
+
+        <MudButton Variant="Variant.Filled"
+                   Class="btn-primary"
+                   OnClick="Cancelar">
+            Cancelar
+        </MudButton>
+    </div>
+</MudContainer>
+
+@code {
+    private List<OrdenControlDTO> ordenes = new();
+    private string busqueda = "";
+
+    
+    private void VerDosificacion(string orden)
+    {
+        Snackbar.Add($"Ver dosificación de la orden {orden}", Severity.Info);
+        // Aquí puedes navegar a una vista de detalle o abrir un modal
+        // NavigationManager.NavigateTo($"/DetalleDosificacion/{orden}");
+    }
+
+    private void Regresar()
+    {
+        NavigationManager.NavigateTo("/Dashboard");
+    }
+
+    private void Cancelar()
+    {
+        NavigationManager.NavigateTo("/Dashboard");
+    }
+
+    // Clase DTO para el panel de control
+    public class OrdenControlDTO
+    {
+        public string Orden { get; set; } = "";
+        public string Estado { get; set; } = "";
+        public string TiempoTranscurrido { get; set; } = "";
+        public string Porcentaje { get; set; } = "";
+        public string Prioridad { get; set; } = "";
+        public string Observaciones { get; set; } = "";
+    }
+}

@@ -1,0 +1,237 @@
+﻿@page "/Dashboard"
+@inject NavigationManager NavigationManager
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+
+    .header-container {
+        background-color: #3e3e9f;
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+    }
+
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .header-title {
+        font-size: 2rem;
+        font-weight: 400;
+        margin: 0;
+    }
+
+    .dropbox-icon {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+
+    .user-icon {
+        width: 35px;
+        height: 35px;
+        color: white;
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: calc(100vh - 80px);
+        background-color: #f5f5f5;
+    }
+
+    .menu-section {
+        flex: 0 0 45%;
+        padding: 3rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-section {
+        flex: 0 0 55%;
+        padding: 3rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .action-title {
+        font-size: 2rem;
+        color: #363636;
+        font-weight: 300;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .click-icon {
+        width: 80px;
+        height: 80px;
+        color: #3e3e9f;
+        margin-bottom: 2rem;
+    }
+
+    .menu-button {
+        width: 100%;
+        max-width: 400px;
+        padding: 1.25rem 2rem;
+        background-color: #c8c8c8;
+        color: #363636;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.25rem;
+        font-weight: 400;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .menu-button:hover {
+            background-color: #b8b8b8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+    .btn-cerrar-sesion {
+        padding: 0.875rem 2.5rem;
+        background-color: #3e3e9f;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.125rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        margin-top: 1rem;
+    }
+
+        .btn-cerrar-sesion:hover {
+            background-color: #34347d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-cerrar-sesion:active {
+            background-color: #2a2a66;
+            transform: translateY(0);
+        }
+
+    @@media (max-width: 768px) {
+        .dashboard-container {
+            flex-direction: column;
+        }
+
+        .menu-section, .action-section {
+            flex: 1;
+            padding: 2rem 1rem;
+        }
+
+        .action-title {
+            font-size: 1.5rem;
+        }
+
+        .menu-button {
+            font-size: 1.1rem;
+            padding: 1rem 1.5rem;
+        }
+    }
+</style>
+
+<div class="header-container">
+    <div class="header-content">
+        <div class="header-left">
+            <svg class="dropbox-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 2L0 6l6 4 6-4-6-4zm12 0l-6 4 6 4 6-4-6-4zM0 14l6 4 6-4-6-4-6 4zm18 0l-6 4 6 4 6-4-6-4z" />
+            </svg>
+            <h1 class="header-title">Preflex línea Pegaucho</h1>
+        </div>
+        <div>
+            <svg class="user-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <div class="menu-section">
+        <button class="menu-button" @onclick="NavigateToProduccion">
+            Producción
+        </button>
+
+        <button class="menu-button" @onclick="NavigateToDosificacion">
+            Dosificación
+        </button>
+
+        <button class="menu-button" @onclick="NavigateToControlFabricacion">
+            Control de la fabricación
+        </button>
+    </div>
+
+    <div class="action-section">
+        <h2 class="action-title">Seleccione la acción a<br />realizar</h2>
+
+        <svg class="click-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <polyline points="9 10 9 3 15 3 15 10"></polyline>
+            <line x1="9" y1="10" x2="15" y2="4"></line>
+        </svg>
+
+        <button class="btn-cerrar-sesion" @onclick="CerrarSesion">
+            Cerrar sesión
+        </button>
+    </div>
+</div>
+
+@code {
+    private void NavigateToProduccion()
+    {
+        NavigationManager.NavigateTo("/OrdenesProducciones");
+    }
+
+    private void NavigateToDosificacion()
+    {
+        // Navegar a la vista de Dosificación cuando esté creada
+        NavigationManager.NavigateTo("/Dosificacion");
+    }
+
+    private void NavigateToControlFabricacion()
+    {
+        // Navegar a la vista de Control de Fabricación cuando esté creada
+        NavigationManager.NavigateTo("/ControlFabricacion");
+    }
+
+    private void CerrarSesion()
+    {
+        // Aquí implementar la lógica de cerrar sesión
+        // Por ejemplo: limpiar token, estado de autenticación, etc.
+        NavigationManager.NavigateTo("/Usuarios");
+    }
+}

@@ -1,6 +1,9 @@
 ﻿@page "/"
+@inject NavigationManager Nav
 
-
-<PageTitle>Pegaucho</PageTitle>
-
-<MudText Typo="Typo.h3" GutterBottom="true">Bienvenido a la empresa Pegaucho</MudText>
+@code {
+    protected override void OnInitialized()
+    {
+        Nav.NavigateTo("/usuarios", true);
+    }
+}

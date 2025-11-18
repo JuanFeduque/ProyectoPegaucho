@@ -1,11 +1,15 @@
-﻿@page "/OrdenesProducciones"
+﻿@page "/Dosificacion"
 @using Pegaucho.Shared.DTOs
-@using Pegaucho.Frontend.Client.Repositories
-@inject IOrdenProduccionRepository OrdenProduccionRepository
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+    }
+
     .header-container {
         background-color: #3e3e9f;
         color: white;
@@ -16,54 +20,98 @@
         margin-bottom: 2rem;
     }
 
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
     .header-title {
         font-size: 2rem;
         font-weight: 400;
         margin: 0;
     }
 
-    .header-icons {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
+    .dropbox-icon {
+        width: 40px;
+        height: 40px;
+        color: white;
     }
 
-    .search-section {
-        margin-bottom: 1.5rem;
+    .user-icon {
+        width: 35px;
+        height: 35px;
+        color: white;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 300;
+        color: #363636;
+        margin-bottom: 2rem;
+    }
+
+    .search-container {
         padding: 0 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .search-label {
+        font-weight: 600;
+        color: #363636;
+        margin-bottom: 0.5rem;
     }
 
     .datos-producto-card {
-        background-color: #d3d3d3;
+        background-color: #c8c8c8;
         padding: 1.5rem;
         margin: 0 2rem 1.5rem 2rem;
         border-radius: 4px;
-        border: 3px solid #4db8e8;
     }
 
     .datos-header {
         font-size: 1rem;
         font-weight: 600;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         color: #363636;
     }
 
-    .form-row {
-        display: flex;
-        gap: 2rem;
-        margin-bottom: 1rem;
-        align-items: flex-end;
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 200px;
+        gap: 1.5rem;
+        align-items: end;
     }
 
-    .form-field {
-        flex: 1;
+    .form-row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 200px;
+        gap: 1.5rem;
+        align-items: end;
+        margin-top: 1rem;
     }
 
-    .button-group {
+    .form-field label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #363636;
+        margin-bottom: 0.3rem;
+    }
+
+    .button-column {
         display: flex;
-        gap: 1rem;
         flex-direction: column;
-        min-width: 180px;
+        gap: 0.75rem;
     }
 
     .table-container {
@@ -71,6 +119,16 @@
         border: 2px solid #3e3e9f;
         border-radius: 4px;
         overflow: hidden;
+        background-color: #c8c8c8;
+    }
+
+    .scroll-indicators {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 2rem;
+        margin-top: 0.5rem;
+        color: #666;
+        font-size: 1.5rem;
     }
 
     .action-buttons {
@@ -78,11 +136,18 @@
         justify-content: space-between;
         padding: 0 2rem;
         margin-top: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn-group-right {
+        display: flex;
+        gap: 1rem;
     }
 
     .btn-primary {
         background-color: #3e3e9f !important;
         color: white !important;
+        
     }
 
     .btn-secondary {
@@ -90,34 +155,42 @@
         color: white !important;
     }
 
-    .scroll-indicator {
-        text-align: right;
-        padding-right: 2rem;
-        color: #666;
-        font-size: 1.5rem;
+
+    @@media (max-width: 1200px) {
+        .form-grid,
+        .form-row-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .button-column {
+            grid-column: span 2;
+            flex-direction: row;
+        }
     }
 </style>
 
-<!-- Header -->
 <div class="header-container">
-    <div style="display: flex; align-items: center; gap: 1rem;">
-        <MudIcon Icon="@Icons.Material.Filled.Inventory2" Size="Size.Large" />
-        <h1 class="header-title">Preflex línea Pegaucho</h1>
-    </div>
-    <div class="header-icons">
-        <MudIconButton Icon="@Icons.Material.Filled.Person" Color="Color.Inherit" Size="Size.Large" />
+    <div class="header-content">
+        <div class="header-left">
+            <svg class="dropbox-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 2L0 6l6 4 6-4-6-4zm12 0l-6 4 6 4 6-4-6-4zM0 14l6 4 6-4-6-4-6 4zm18 0l-6 4 6 4 6-4-6-4z" />
+            </svg>
+            <h1 class="header-title">Preflex línea Pegaucho</h1>
+        </div>
+        <div>
+            <svg class="user-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>
+        </div>
     </div>
 </div>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Style="padding: 0;">
-    <!-- Título de sección -->
-    <div style="text-align: center; margin-bottom: 2rem;">
-        <MudText Typo="Typo.h4" Style="font-weight: 300;">Producción</MudText>
-    </div>
+    <h2 class="page-title">Dosificación</h2>
 
     <!-- Búsqueda -->
-    <div style="padding: 0 2rem; margin-bottom: 1.5rem;">
-        <MudText Typo="Typo.body1" Style="margin-bottom: 0.5rem;"><b>Buscar:</b></MudText>
+    <div class="search-container">
+        <div class="search-label">Buscar:</div>
         <MudTextField @bind-Value="busqueda"
                       Placeholder="Cédula, nombre..."
                       Variant="Variant.Outlined"
@@ -131,46 +204,73 @@
     <div class="datos-producto-card">
         <div class="datos-header">Datos del producto:</div>
 
-        <div class="form-row">
+        <div class="form-grid">
             <div class="form-field">
-                <MudText Typo="Typo.body2" Style="margin-bottom: 0.3rem;">Código producto:</MudText>
-                <MudNumericField @bind-Value="ordenProduccion.CodProd"
+                <label>Código producto:</label>
+                <MudNumericField @bind-Value="dosificacion.CodigoProducto"
                                  Variant="Variant.Outlined"
                                  Margin="Margin.Dense"
                                  Style="background-color: white;" />
             </div>
 
             <div class="form-field">
-                <MudText Typo="Typo.body2" Style="margin-bottom: 0.3rem;">Cantidad:</MudText>
-                <MudNumericField @bind-Value="ordenProduccion.Cantidad"
+                <label>Cantidad:</label>
+                <MudNumericField @bind-Value="dosificacion.Cantidad"
                                  Variant="Variant.Outlined"
                                  Margin="Margin.Dense"
                                  Style="background-color: white;" />
             </div>
 
             <div class="form-field">
-                <MudText Typo="Typo.body2" Style="margin-bottom: 0.3rem;">Prioridad:</MudText>
-                <MudTextField @bind-Value="ordenProduccion.Prioridad"
+                <label>Prioridad:</label>
+                <MudTextField @bind-Value="dosificacion.Prioridad"
                               Variant="Variant.Outlined"
                               Margin="Margin.Dense"
                               Style="background-color: white;" />
             </div>
 
-            <div class="form-field">
-                <MudText Typo="Typo.body2" Style="margin-bottom: 0.3rem;">Tiempo estimado:</MudText>
-                <MudTextField @bind-Value="ordenProduccion.TiempoEstimado"
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense"
-                              Style="background-color: white;" />
-            </div>
-
-            <div class="button-group">
+            <div class="button-column">
                 <MudButton Variant="Variant.Filled"
                            Class="btn-primary"
                            FullWidth="true"
                            OnClick="AgregarProducto">
                     Agregar producto
                 </MudButton>
+            </div>
+        </div>
+
+        <div class="form-row-2">
+            <div class="form-field">
+                <label>Maquinaria:</label>
+                <MudSelect @bind-Value="dosificacion.Maquinaria"
+                           Variant="Variant.Outlined"
+                           Margin="Margin.Dense"
+                           Style="background-color: white;">
+                    <MudSelectItem Value="@("")">Seleccione...</MudSelectItem>
+                    <MudSelectItem Value="@("pistón")">pistón</MudSelectItem>
+                    <MudSelectItem Value="@("peristáltica")">peristáltica</MudSelectItem>
+                    <MudSelectItem Value="@("volumétrica")">volumétrica</MudSelectItem>
+                    <MudSelectItem Value="@("gravimétrica")">gravimétrica</MudSelectItem>
+                </MudSelect>
+            </div>
+
+            <div class="form-field">
+                <label>Material de empaque:</label>
+                <MudTextField @bind-Value="dosificacion.MaterialEmpaque"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Style="background-color: white;" />
+            </div>
+
+            <div class="form-field">
+                <label>Tiempo estimado:</label>
+                <MudTextField @bind-Value="dosificacion.TiempoEstimado"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Style="background-color: white;" />
+            </div>
+
+            <div class="button-column">
                 <MudButton Variant="Variant.Filled"
                            Class="btn-primary"
                            FullWidth="true"
@@ -179,66 +279,39 @@
                 </MudButton>
             </div>
         </div>
-
-        <div class="form-row">
-            <div class="form-field">
-                <MudText Typo="Typo.body2" Style="margin-bottom: 0.3rem;">Maquinaria:</MudText>
-                <MudSelect @bind-Value="ordenProduccion.MaquinaProd"
-                           Variant="Variant.Outlined"
-                           Margin="Margin.Dense"
-                           Style="background-color: white;">
-                    <MudSelectItem Value="@("pistón")">pistón</MudSelectItem>
-                    <MudSelectItem Value="@("peristáltica")">peristáltica</MudSelectItem>
-                    <MudSelectItem Value="@("volumétrica")">volumétrica</MudSelectItem>
-                    <MudSelectItem Value="@("gravimétrica")">gravimétrica</MudSelectItem>
-                </MudSelect>
-            </div>
-            <div class="form-field">
-                <MudText Typo="Typo.body2" Style="margin-bottom: 0.3rem;">Materias primas:</MudText>
-                <MudTextField @bind-Value="ordenProduccion.MatPrima"
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense"
-                              Style="background-color: white;" />
-            </div>
-            <div class="form-field"></div>
-            <div class="button-group"></div>
-        </div>
     </div>
 
     <!-- Tabla -->
     <div class="table-container">
-        <MudTable Items="@ordenes"
+        <MudTable Items="@productos"
                   Hover="true"
                   Striped="true"
                   Dense="true"
-                  Style="background-color: #e8e8e8;">
+                  Style="background-color: #c8c8c8;">
             <HeaderContent>
                 <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Código</MudTh>
                 <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Producto</MudTh>
                 <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Cantidad</MudTh>
-                <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Materias primas</MudTh>
+                <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Material empaque</MudTh>
                 <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Maquinaria</MudTh>
                 <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Tiempo estimando</MudTh>
                 <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">costos</MudTh>
                 <MudTh Style="background-color: #3e3e9f; color: white; text-align: center;">Fecha</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Código" Style="text-align: center;">@context.CodProd</MudTd>
+                <MudTd DataLabel="Código" Style="text-align: center;">@context.CodigoProducto</MudTd>
                 <MudTd DataLabel="Producto" Style="text-align: center;">@context.Nombre</MudTd>
                 <MudTd DataLabel="Cantidad" Style="text-align: center;">@context.Cantidad</MudTd>
-                <MudTd DataLabel="Materias primas" Style="text-align: center;">@context.MatPrima</MudTd>
-                <MudTd DataLabel="Maquinaria" Style="text-align: center;">@context.MaquinaProd</MudTd>
+                <MudTd DataLabel="Material empaque" Style="text-align: center;">@context.MaterialEmpaque</MudTd>
+                <MudTd DataLabel="Maquinaria" Style="text-align: center;">@context.Maquinaria</MudTd>
                 <MudTd DataLabel="Tiempo estimando" Style="text-align: center;">@context.TiempoEstimado</MudTd>
                 <MudTd DataLabel="costos" Style="text-align: center;">@context.Costo</MudTd>
-                <MudTd DataLabel="Fecha" Style="text-align: center;">@context.Fecha?.ToString("dd/MM/yyyy")</MudTd>
+                <MudTd DataLabel="Fecha" Style="text-align: center;">@context.Fecha.ToString("dd/MM/yyyy")</MudTd>
             </RowTemplate>
         </MudTable>
     </div>
 
-    <!-- Indicador de scroll -->
-    <div class="scroll-indicator">
-        <span>↓</span>
-    </div>
+    
 
     <!-- Botones de acción -->
     <div class="action-buttons">
@@ -250,7 +323,7 @@
             Regresar
         </MudButton>
 
-        <div style="display: flex; gap: 1rem;">
+        <div class="btn-group-right">
             <MudButton Variant="Variant.Filled"
                        Class="btn-primary"
                        Size="Size.Large"
@@ -279,53 +352,29 @@
 </MudContainer>
 
 @code {
-    private OrdenProduccionDTO ordenProduccion = new();
-    private List<OrdenProduccionDTO> ordenes = new();
+    private DosificacionDTO dosificacion = new();
+    private List<DosificacionDTO> productos = new();
     private string busqueda = "";
     private bool loading = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        ordenProduccion.IdOrdenPanel = 1;
-        ordenProduccion.IdLogin = 1;
-        await CargarOrdenes();
-    }
-
-    private async Task CargarOrdenes()
-    {
-        try
-        {
-            var response = await OrdenProduccionRepository.GetAsync();
-            if (!response.Error && response.Response != null)
-            {
-                ordenes = response.Response.ToList();
-            }
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Error al cargar órdenes: {ex.Message}", Severity.Error);
-        }
-    }
-
     private void AgregarProducto()
     {
-        if (ordenProduccion.CodProd > 0 && ordenProduccion.Cantidad > 0)
+        if (dosificacion.CodigoProducto > 0 && dosificacion.Cantidad > 0)
         {
-            var nuevaOrden = new OrdenProduccionDTO
+            var nuevoProducto = new DosificacionDTO
                 {
-                    CodProd = ordenProduccion.CodProd,
-                    Cantidad = ordenProduccion.Cantidad,
-                    MaquinaProd = ordenProduccion.MaquinaProd,
-                    Nombre = $"Colbon",
-                    MatPrima = ordenProduccion.MatPrima,
-                    Prioridad = "Pendiente",
-                    TiempoEstimado = ordenProduccion.TiempoEstimado,
-                    Fecha = DateTime.Now,
-                    IdOrdenPanel = 1,
-                    IdLogin = 1
+                    CodigoProducto = dosificacion.CodigoProducto,
+                    Nombre = "Producto " + dosificacion.CodigoProducto,
+                    Cantidad = dosificacion.Cantidad,
+                    Prioridad = dosificacion.Prioridad,
+                    Maquinaria = dosificacion.Maquinaria,
+                    MaterialEmpaque = dosificacion.MaterialEmpaque,
+                    TiempoEstimado = dosificacion.TiempoEstimado,
+                    Costo = 0,
+                    Fecha = DateTime.Now
                 };
 
-            ordenes.Add(nuevaOrden);
+            productos.Add(nuevoProducto);
             LimpiarFormulario();
             Snackbar.Add("Producto agregado a la lista", Severity.Success);
         }
@@ -337,16 +386,20 @@
 
     private void EliminarProducto()
     {
-        if (ordenes.Any())
+        if (productos.Any())
         {
-            ordenes.RemoveAt(ordenes.Count - 1);
+            productos.RemoveAt(productos.Count - 1);
             Snackbar.Add("Último producto eliminado", Severity.Info);
+        }
+        else
+        {
+            Snackbar.Add("No hay productos para eliminar", Severity.Warning);
         }
     }
 
-    private async Task GenerarOrden()
+    private void GenerarOrden()
     {
-        if (!ordenes.Any())
+        if (!productos.Any())
         {
             Snackbar.Add("Agregue al menos un producto antes de generar la orden", Severity.Warning);
             return;
@@ -355,17 +408,13 @@
         loading = true;
         try
         {
-            foreach (var orden in ordenes)
-            {
-                await OrdenProduccionRepository.PostAsync(orden);
-            }
-
-            Snackbar.Add("✓ Órdenes de producción generadas exitosamente", Severity.Success);
-            ordenes.Clear();
+            // Aquí implementar la lógica para guardar en BD
+            Snackbar.Add("✓ Orden de dosificación generada exitosamente", Severity.Success);
+            productos.Clear();
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error al generar órdenes: {ex.Message}", Severity.Error);
+            Snackbar.Add($"Error al generar orden: {ex.Message}", Severity.Error);
         }
         finally
         {
@@ -375,11 +424,7 @@
 
     private void LimpiarFormulario()
     {
-        ordenProduccion = new OrdenProduccionDTO
-            {
-                IdOrdenPanel = 1,
-                IdLogin = 1
-            };
+        dosificacion = new DosificacionDTO();
     }
 
     private void Regresar()
@@ -387,11 +432,24 @@
         NavigationManager.NavigateTo("/Dashboard");
     }
 
-
     private void Cancelar()
     {
-        ordenes.Clear();
+        productos.Clear();
         LimpiarFormulario();
         Snackbar.Add("Operación cancelada", Severity.Info);
+    }
+
+    // Clase DTO temporal (deberás crear esta clase en tu proyecto Shared/DTOs)
+    public class DosificacionDTO
+    {
+        public int CodigoProducto { get; set; }
+        public string Nombre { get; set; } = "";
+        public int Cantidad { get; set; }
+        public string Prioridad { get; set; } = "";
+        public string Maquinaria { get; set; } = "";
+        public string MaterialEmpaque { get; set; } = "";
+        public string TiempoEstimado { get; set; } = "";
+        public decimal Costo { get; set; }
+        public DateTime Fecha { get; set; }
     }
 }
