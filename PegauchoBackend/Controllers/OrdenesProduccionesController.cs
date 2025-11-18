@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Pegaucho.Shared.DTOs;
 using Pegaucho.Shared.Entities;
 using PegauchoBackend.Data;
-using PegauchoBackend.UnitsOfWork.Interfaces;
 
 namespace PegauchoBackend.Controllers;
 
@@ -91,5 +90,26 @@ public class OrdenesProduccionesController : ControllerBase
         return Ok(orden);
     }
 
-    // Mantener endpoints CRUD si los necesitas (Get all, Post, Put, Delete) delegando a UnitOfWork
+    [HttpGet("panelorders")]
+    public async Task<IActionResult> GetPanelOrders()
+    {
+        var orders = await _context.OrdenesProduccion
+            .AsNoTracking()
+            .OrderByDescending(o => o.fecha)
+            .Take(100)
+            .ToListAsync();
+
+        var result = orders.Select(o => new OrdenControlDTO
+        {
+            Orden = o.IdOrdenProd.ToString(),
+            Estado = "Pendiente",
+            TiempoTranscurrido = "",
+            Porcentaje = "0%",
+            Prioridad = o.prioridad ?? "",
+            Observaciones = "",
+            Fecha = o.fecha.HasValue ? o.fecha.Value.ToString("yyyy-MM-dd HH:mm:ss") : ""
+        }).ToList();
+
+        return Ok(result);
+    }
 }

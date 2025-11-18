@@ -194,7 +194,7 @@
 
     <!-- Tabla con indicadores de scroll -->
     <div class="table-wrapper">
-       
+        
 
         <div class="table-container">
             <MudTable Items="@ordenes"
@@ -256,17 +256,43 @@
     {
         try
         {
-            var response = await Http.GetAsync("api/Dosificacion/panelorders");
-            if (response.IsSuccessStatusCode)
+            var dosificacion = new List<OrdenControlDTO>();
+            var produccion = new List<OrdenControlDTO>();
+
+            try
             {
-                var data = await response.Content.ReadFromJsonAsync<List<OrdenControlDTO>>();
-                if (data != null)
-                    ordenes = data;
+                dosificacion = await Http.GetFromJsonAsync<List<OrdenControlDTO>>("api/Dosificacion/panelorders") ?? new List<OrdenControlDTO>();
             }
-            else
+            catch
             {
-                Snackbar.Add("No se pudieron obtener las órdenes del panel.", Severity.Warning);
+                // ignore dosificacion errors
             }
+
+            try
+            {
+                produccion = await Http.GetFromJsonAsync<List<OrdenControlDTO>>("api/OrdenesProducciones/panelorders") ?? new List<OrdenControlDTO>();
+            }
+            catch
+            {
+                // ignore produccion errors
+            }
+
+            // Merge lists, avoid duplicates by Orden
+            var merged = dosificacion.Concat(produccion)
+                .GroupBy(x => x.Orden)
+                .Select(g => g.First())
+                .ToList();
+
+            // Try to sort by Fecha (format: yyyy-MM-dd HH:mm:ss)
+            merged.Sort((a, b) =>
+            {
+                DateTime da, db;
+                var pa = DateTime.TryParse(a.Fecha, out da) ? da : DateTime.MinValue;
+                var pb = DateTime.TryParse(b.Fecha, out db) ? db : DateTime.MinValue;
+                return pb.CompareTo(pa);
+            });
+
+            ordenes = merged;
         }
         catch (Exception ex)
         {
