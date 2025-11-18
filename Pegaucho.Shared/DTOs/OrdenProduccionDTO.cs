@@ -40,3 +40,8 @@ public class OrdenProduccionDTO
     [Range(0, double.MaxValue, ErrorMessage = "El tiempo no puede ser negativo")]
     public decimal? TiempoEstimado { get; set; }
 }
+
+public class GenerarProduccionRequest
+{
+    public List<OrdenProduccionDTO> Ordenes { get; set; } = new List<OrdenProduccionDTO>();
+}

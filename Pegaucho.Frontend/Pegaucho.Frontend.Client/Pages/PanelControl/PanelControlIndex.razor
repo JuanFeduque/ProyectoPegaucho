@@ -1,6 +1,8 @@
 ﻿@page "/ControlFabricacion"
+@using Pegaucho.Shared.DTOs
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject HttpClient Http
 
 <style>
     body {
@@ -245,11 +247,37 @@
     private List<OrdenControlDTO> ordenes = new();
     private string busqueda = "";
 
-    
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarOrdenesAsync();
+    }
+
+    private async Task CargarOrdenesAsync()
+    {
+        try
+        {
+            var response = await Http.GetAsync("api/Dosificacion/panelorders");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<List<OrdenControlDTO>>();
+                if (data != null)
+                    ordenes = data;
+            }
+            else
+            {
+                Snackbar.Add("No se pudieron obtener las órdenes del panel.", Severity.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error al cargar panel: {ex.Message}", Severity.Error);
+        }
+    }
+
     private void VerDosificacion(string orden)
     {
         Snackbar.Add($"Ver dosificación de la orden {orden}", Severity.Info);
-        // Aquí puedes navegar a una vista de detalle o abrir un modal
+        // Aquí puedes navegar a vista detalle o abrir un modal
         // NavigationManager.NavigateTo($"/DetalleDosificacion/{orden}");
     }
 
@@ -263,14 +291,4 @@
         NavigationManager.NavigateTo("/Dashboard");
     }
 
-    // Clase DTO para el panel de control
-    public class OrdenControlDTO
-    {
-        public string Orden { get; set; } = "";
-        public string Estado { get; set; } = "";
-        public string TiempoTranscurrido { get; set; } = "";
-        public string Porcentaje { get; set; } = "";
-        public string Prioridad { get; set; } = "";
-        public string Observaciones { get; set; } = "";
-    }
 }

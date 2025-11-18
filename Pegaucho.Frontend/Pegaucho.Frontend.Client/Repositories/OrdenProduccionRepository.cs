@@ -5,7 +5,8 @@ namespace Pegaucho.Frontend.Client.Repositories;
 public class OrdenProduccionRepository : IOrdenProduccionRepository
 {
     private readonly IRepository _repository;
-    private const string _url = "api/ordenproduccion";
+    // Use the controller name route (plural) to match backend controller
+    private const string _url = "api/OrdenesProducciones";
 
     public OrdenProduccionRepository(IRepository repository)
     {

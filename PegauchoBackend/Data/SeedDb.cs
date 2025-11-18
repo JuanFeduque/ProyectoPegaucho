@@ -33,7 +33,7 @@ public class SeedDb
 
             _context.Usuarios.Add(new Usuario
             {
-                usuario = "operador",
+                usuario = "planta",
                 contrasena = "123456"
             });
 

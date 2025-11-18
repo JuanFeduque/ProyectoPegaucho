@@ -4,6 +4,7 @@
 @inject IOrdenProduccionRepository OrdenProduccionRepository
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject HttpClient Http
 
 <style>
     .header-container {
@@ -355,13 +356,19 @@
         loading = true;
         try
         {
-            foreach (var orden in ordenes)
+            var request = new GenerarProduccionRequest { Ordenes = ordenes };
+            var response = await Http.PostAsJsonAsync("api/OrdenesProducciones/generar", request);
+            if (response.IsSuccessStatusCode)
             {
-                await OrdenProduccionRepository.PostAsync(orden);
+                Snackbar.Add("✓ Órdenes de producción generadas y guardadas en BD", Severity.Success);
+                ordenes.Clear();
+                NavigationManager.NavigateTo("/ControlFabricacion");
             }
-
-            Snackbar.Add("✓ Órdenes de producción generadas exitosamente", Severity.Success);
-            ordenes.Clear();
+            else
+            {
+                var msg = await response.Content.ReadAsStringAsync();
+                Snackbar.Add(string.IsNullOrWhiteSpace(msg) ? "Error al generar ordenes." : msg, Severity.Error);
+            }
         }
         catch (Exception ex)
         {

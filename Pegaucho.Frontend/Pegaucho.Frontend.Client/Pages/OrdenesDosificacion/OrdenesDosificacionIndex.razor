@@ -2,6 +2,7 @@
 @using Pegaucho.Shared.DTOs
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject HttpClient Http
 
 <style>
     body {
@@ -397,7 +398,7 @@
         }
     }
 
-    private void GenerarOrden()
+    private async Task GenerarOrden()
     {
         if (!productos.Any())
         {
@@ -408,9 +409,19 @@
         loading = true;
         try
         {
-            // Aquí implementar la lógica para guardar en BD
-            Snackbar.Add("✓ Orden de dosificación generada exitosamente", Severity.Success);
-            productos.Clear();
+            var request = new GenerarOrdenRequest { Productos = productos };
+            var response = await Http.PostAsJsonAsync("api/Dosificacion/generar", request);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("✓ Orden de dosificación generada y guardada en BD", Severity.Success);
+                productos.Clear();
+                NavigationManager.NavigateTo("/ControlFabricacion");
+            }
+            else
+            {
+                var msg = await response.Content.ReadAsStringAsync();
+                Snackbar.Add(string.IsNullOrWhiteSpace(msg) ? "Error al generar orden." : msg, Severity.Error);
+            }
         }
         catch (Exception ex)
         {
@@ -439,17 +450,4 @@
         Snackbar.Add("Operación cancelada", Severity.Info);
     }
 
-    // Clase DTO temporal (deberás crear esta clase en tu proyecto Shared/DTOs)
-    public class DosificacionDTO
-    {
-        public int CodigoProducto { get; set; }
-        public string Nombre { get; set; } = "";
-        public int Cantidad { get; set; }
-        public string Prioridad { get; set; } = "";
-        public string Maquinaria { get; set; } = "";
-        public string MaterialEmpaque { get; set; } = "";
-        public string TiempoEstimado { get; set; } = "";
-        public decimal Costo { get; set; }
-        public DateTime Fecha { get; set; }
-    }
 }
